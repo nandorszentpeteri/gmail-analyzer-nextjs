@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  reports   Report[]
+  emails    Email[]
+  syncStatus SyncStatus?
+  syncSessions SyncSession[]
+
+  @@map("users")
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  userEmail   String
+  description String
+  mode        String
+  limit       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Summary statistics
+  totalEmails       Int
+  deletionCandidates Int
+  keepCandidates    Int      @default(0)
+  newsletterSenders  Int
+  totalSize         BigInt
+  potentialSavings  BigInt
+
+  // Token usage statistics (for AI analysis)
+  tokenInputCount   Int?     @default(0)
+  tokenOutputCount  Int?     @default(0)
+  tokenTotalCount   Int?     @default(0)
+  aiRequestCount    Int?     @default(0)
+
+  // Relations
+  user              User            @relation(fields: [userEmail], references: [email])
+  emailCandidates   EmailCandidate[]
+  newsletterSender  NewsletterSender[]
+
+  @@map("reports")
+}
+
+model EmailCandidate {
+  id                 String   @id @default(cuid())
+  reportId           String
+  emailId            String   // Gmail message ID
+  subject            String
+  from               String
+  date               String
+  size               BigInt
+  category           String
+  reasoning          String
+  recommendationType String   @default("delete") // "delete" or "keep"
+  confidence         String?  // "high" | "medium" | "low"
+  createdAt          DateTime @default(now())
+
+  // Relations
+  report             Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@map("email_candidates")
+}
+
+model NewsletterSender {
+  id          String   @id @default(cuid())
+  reportId    String
+  senderEmail String
+  senderName  String
+  count       Int
+  totalSize   BigInt
+  category    String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@map("newsletter_senders")
+}
+
+model Email {
+  id              String   @id @default(cuid())
+  userEmail       String
+  gmailId         String   @unique  // Gmail message ID
+  threadId        String?
+  subject         String
+  senderEmail     String
+  senderName      String
+  toAddress       String?
+  date            DateTime
+  size            Int
+  labels          String   // JSON array of label names
+  snippet         String?
+  hasAttachments  Boolean  @default(false)
+  attachmentInfo  String?  // JSON with attachment details
+  category        String?  // Auto-classified category
+  lastSynced      DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userEmail], references: [email])
+
+  @@index([userEmail])
+  @@index([gmailId])
+  @@index([date])
+  @@index([senderEmail])
+  @@index([category])
+  @@map("emails")
+}
+
+model SyncStatus {
+  userEmail     String   @id
+  lastSync      DateTime?
+  totalEmails   Int      @default(0)
+  syncInProgress Boolean @default(false)
+  syncOptions   String?  // JSON with last sync options
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User     @relation(fields: [userEmail], references: [email])
+
+  @@map("sync_status")
+}
+
+model SyncSession {
+  id                String    @id @default(cuid())
+  userEmail         String
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+  status            String    // 'in_progress', 'completed', 'failed'
+  syncOptions       String    // JSON with sync options
+  dateRangeStart    DateTime?
+  dateRangeEnd      DateTime?
+  emailsProcessed   Int       @default(0)
+  totalEmails       Int?
+  currentBatch      Int       @default(0)
+  totalBatches      Int       @default(0)
+  errorMessage      String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  user              User      @relation(fields: [userEmail], references: [email])
+
+  @@index([userEmail])
+  @@index([status])
+  @@map("sync_sessions")
+}

@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gmail Analyzer
 
-## Getting Started
+A Next.js application that analyzes your Gmail inbox to identify deletion candidates, newsletter senders, and potential storage savings using AI-powered email classification.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Gmail Integration**: Securely connect to your Gmail account via Google OAuth
+- **AI-Powered Analysis**: Uses Claude Sonnet 4 to intelligently categorize and analyze emails
+- **Email Classification**: Identifies newsletters, promotional emails, and deletion candidates
+- **Storage Insights**: Shows potential storage savings from cleaning up your inbox
+- **Historical Reports**: Track and compare analysis results over time
+- **Batch Processing**: Efficiently processes large volumes of emails
+
+## Tech Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
+- **Backend**: Next.js API routes, Prisma ORM
+- **Database**: SQLite (easily configurable for other databases)
+- **Authentication**: NextAuth.js with Google OAuth
+- **AI**: AWS Bedrock with Claude Sonnet 4
+- **Email API**: Gmail API via Google APIs
+
+## Prerequisites
+
+- Node.js 18+
+- Google Cloud Project with Gmail API enabled
+- AWS account with Bedrock access
+- Google OAuth credentials
+
+## Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd gmail-analyzer-nextjs
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**
+
+   Copy `.env.local.example` to `.env.local` and fill in the required values:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+   Required environment variables:
+   - `GOOGLE_CLIENT_ID` - Google OAuth client ID
+   - `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
+   - `AWS_REGION` - AWS region for Bedrock
+   - `AWS_PROFILE` - AWS profile with Bedrock access
+   - `NEXTAUTH_SECRET` - Random secret for NextAuth
+   - `NEXTAUTH_URL` - Your application URL
+   - `DATABASE_URL` - Database connection string
+
+4. **Set up the database**
+   ```bash
+   npm run db:generate
+   npm run db:push
+   ```
+
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Google OAuth Setup
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Gmail API
+4. Create OAuth 2.0 credentials
+5. Add your domain to authorized origins
+6. Add the callback URL: `http://localhost:3000/api/auth/callback/google`
+
+## AWS Bedrock Setup
+
+1. Ensure you have AWS CLI configured with appropriate credentials
+2. Request access to Claude models in AWS Bedrock console
+3. Configure your AWS profile with the necessary permissions
+
+## Usage
+
+1. **Sign In**: Use Google OAuth to connect your Gmail account
+2. **Analyze**: Start an analysis of your inbox with customizable parameters
+3. **Review Results**: Browse deletion candidates and newsletter senders
+4. **Track Progress**: View historical reports and storage savings
+
+## Available Scripts
+
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run db:generate` - Generate Prisma client
+- `npm run db:push` - Push schema changes to database
+- `npm run db:migrate` - Run database migrations
+
+## Project Structure
+
+```
+src/
+├── app/                 # Next.js app router pages
+│   ├── analyze/        # Email analysis interface
+│   ├── reports/        # Historical reports
+│   └── results/        # Analysis results
+├── lib/                # Utility libraries
+└── components/         # React components
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
 
-## Learn More
+MIT License - see LICENSE file for details.
 
-To learn more about Next.js, take a look at the following resources:
+## Security
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This application handles sensitive email data. Key security measures:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- OAuth 2.0 for secure Gmail access
+- Environment variables for sensitive configuration
+- Data stored locally in SQLite database
+- No email content stored permanently
+- Secure AWS Bedrock integration
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Never commit `.env` files or expose API keys in your code.

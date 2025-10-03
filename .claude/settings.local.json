@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/nszentpeteri/mydev/nandorszentpeteri/kudosapp/**)",
+      "Read(//Users/nszentpeteri/mydev/nandorszentpeteri/assert-equal-test/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
