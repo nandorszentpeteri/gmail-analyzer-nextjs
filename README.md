@@ -56,16 +56,15 @@ A Next.js application that analyzes your Gmail inbox to identify deletion candid
    - `NEXTAUTH_URL` - Your application URL
    - `DATABASE_URL` - Database connection string
 
-4. **Set up the database**
-   ```bash
-   npm run db:generate
-   npm run db:push
-   ```
-
-5. **Run the development server**
+4. **Run the development server**
    ```bash
    npm run dev
    ```
+
+   The database will be automatically set up on first run, including:
+   - Database creation (if needed)
+   - Prisma client generation
+   - Schema migrations
 
    Open [http://localhost:3000](http://localhost:3000) in your browser.
 
@@ -93,10 +92,11 @@ A Next.js application that analyzes your Gmail inbox to identify deletion candid
 
 ## Available Scripts
 
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build for production
+- `npm run dev` - Start development server with Turbopack (auto-setup database)
+- `npm run build` - Build for production (auto-setup database)
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run db:setup` - Manually set up database and generate client
 - `npm run db:generate` - Generate Prisma client
 - `npm run db:push` - Push schema changes to database
 - `npm run db:migrate` - Run database migrations

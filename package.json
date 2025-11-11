@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "tsx scripts/setup-db.ts",
     "dev": "next dev --turbopack",
+    "prebuild": "tsx scripts/setup-db.ts",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "db:setup": "tsx scripts/setup-db.ts",
     "db:migrate": "tsx scripts/migrate-reports.ts",
     "db:generate": "prisma generate",
     "db:push": "prisma db push"
